@@ -6,10 +6,10 @@
 // GraphBellmanFord - Bellman-Ford Algorithm
 //
 
-// Student Name :
-// Student Number :
-// Student Name :
-// Student Number :
+// Student Name : Tiago Coelho
+// Student Number : 118745
+// Student Name : Bernardo Lázaro
+// Student Number : 119230
 
 /*** COMPLETE THE GraphBellmanFordAlgExecute FUNCTION ***/
 
@@ -51,22 +51,47 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
 
   //
   // TO BE COMPLETED !!
+
   //
   // CREATE AND INITIALIZE
-  // result->marked
-  // result->distance
-  // result->predecessor
+  unsigned int vertices = GraphGetNumVertices(g);
+  result->marked = malloc(vertices * sizeof(unsigned int));
+  result->distance = malloc(vertices * sizeof(int));
+  result->predecessor = malloc(vertices * sizeof(int));
   //
 
   // Mark all vertices as not yet visited, i.e., ZERO
-  
+
   // No vertex has (yet) a (valid) predecessor
   
   // No vertex has (yet) a (valid) distance to the start vertex
   
+  for (int v=0; v<vertices; v++) {
+    result->marked[v] = 0;
+    result->distance[v] = -1;
+    result->predecessor[v] = -1;
+  }
+
   // THE ALGORTIHM TO BUILD THE SHORTEST-PATHS TREE
 
-  return NULL;
+  for (int v=0; v<vertices; v++) {
+    
+  }
+
+Bellman_Ford(G,pesos,inicial)
+    para todo vertice ∈ V
+        λ[vertice] ← ∞
+        π[vertice] ← nulo
+
+    λ[inicial] ← 0
+
+    para i de 1 até |V| -1
+        para toda aresta = (u,v) ∈ A
+            se λ[v] > λ[u] + pesos(u,v) # relaxamento
+               λ[v] ← λ[u] + pesos(u,v)
+               π[v] ← u
+
+  return result;
 }
 
 void GraphBellmanFordAlgDestroy(GraphBellmanFordAlg** p) {
