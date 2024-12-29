@@ -6,10 +6,10 @@
 // GraphAllPairsShortestDistances
 //
 
-// Student Name :
-// Student Number :
-// Student Name :
-// Student Number :
+// Student Name : Bernardo Lázaro
+// Student Number : 119230
+// Student Name : Tiago Coelho
+// Student Number : 118745
 
 /*** COMPLETE THE GraphAllPairsShortestDistancesExecute FUNCTION ***/
 
@@ -31,14 +31,48 @@ struct _GraphAllPairsShortestDistances {
 
 // Allocate memory and initialize the distance matrix
 // Compute the distances between vertices by running the Bellman-Ford algorithm
-GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(
-    Graph* g) {
+GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(Graph* g) {
   assert(g != NULL);
 
-  // COMPLETE THE CODE
+  unsigned int numVertices = GraphGetNumVertices(g);
 
-  return NULL;
+  // Alocar memória para a estrutura de resultado
+  GraphAllPairsShortestDistances* result = malloc(sizeof(GraphAllPairsShortestDistances));
+  assert(result != NULL);
+
+  // Alocar memória para a matriz de distâncias
+  result->distance = malloc(numVertices * sizeof(int*));
+  assert(result->distance != NULL);
+  for (unsigned int i = 0; i < numVertices; i++) {
+    result->distance[i] = malloc(numVertices * sizeof(int));
+    assert(result->distance[i] != NULL);
+
+    // Inicializar todas as distâncias como -1 (indefinidas)
+    for (unsigned int j = 0; j < numVertices; j++) {
+      result->distance[i][j] = -1;
+    }
+  }
+
+  result->graph = g;
+
+  // Executar o Bellman-Ford para cada vértice como ponto de partida
+  for (unsigned int startVertex = 0; startVertex < numVertices; startVertex++) {
+    GraphBellmanFordAlg* bf = GraphBellmanFordAlgExecute(g, startVertex);
+    assert(bf != NULL);
+
+    for (unsigned int endVertex = 0; endVertex < numVertices; endVertex++) {
+      if (GraphBellmanFordAlgReached(bf, endVertex)) {
+        result->distance[startVertex][endVertex] = GraphBellmanFordAlgDistance(bf, endVertex);
+      }
+    }
+
+    // Liberar a memória do Bellman-Ford após o uso
+    GraphBellmanFordAlgDestroy(&bf);
+  }
+
+  return result;
 }
+
 
 void GraphAllPairsShortestDistancesDestroy(GraphAllPairsShortestDistances** p) {
   assert(*p != NULL);
