@@ -69,7 +69,7 @@ int traverseAllEdges(GraphBellmanFordAlg* result, int (*cb)(GraphBellmanFordAlg*
             }
         }
 
-        free(adjacents); // Libera a lista de adjacentes após o uso
+        free(adjacents); // Liberta a lista de adjacentes após o uso
     }
     return 1;
 }

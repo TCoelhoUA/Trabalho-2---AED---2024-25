@@ -80,13 +80,9 @@ int main(void) {
   // Bellman-Ford Algorithm
 
   // Consider each vertex as a start vertex
-  for (unsigned int i = 1; i < GraphGetNumVertices(dig03); i++) {
+  for (unsigned int i = 0; i < GraphGetNumVertices(dig03); i++) {
     GraphBellmanFordAlg* BF_result = GraphBellmanFordAlgExecute(dig03, i);
 
-    if (BF_result == NULL) {
-        printf("Erro: Algoritmo Bellman-Ford falhou para o vértice %u\n", i);
-        continue; // Pula para o próximo vértice
-    }
     printf("The shortest path tree rooted at %u\n", i);
     GraphBellmanFordAlgDisplayDOT(BF_result);
     printf("\n");
