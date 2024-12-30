@@ -6,10 +6,10 @@
 // GraphTransitiveClosure - Transitive Closure of a directed graph
 //
 
-// Student Name :
-// Student Number :
-// Student Name :
-// Student Number :
+// Student Name : 119230
+// Student Number : Bernardo Lázaro
+// Student Name : Tiago Coelho 
+// Student Number : 118745
 
 /*** COMPLETE THE GraphComputeTransitiveClosure FUNCTION ***/
 
@@ -27,11 +27,33 @@
 // Return the computed transitive closure as a directed graph
 // Use the Bellman-Ford algorithm
 Graph* GraphComputeTransitiveClosure(Graph* g) {
-  assert(g != NULL);
-  assert(GraphIsDigraph(g));
-  assert(GraphIsWeighted(g) == 0);
+    assert(g != NULL);
+    assert(GraphIsDigraph(g));
+    assert(GraphIsWeighted(g) == 0);
 
-  // COMPLETE THE CODE
+    unsigned int numVertices = GraphGetNumVertices(g);
+    
+    // Criar um novo grafo para armazenar o fecho transitivo
+    Graph* closure = GraphCreate(numVertices, 1, 0); // Digraph (1), não ponderado (0)
+    assert(closure != NULL);
 
-  return NULL;
+    // Para cada vértice do grafo original
+    for (unsigned int u = 0; u < numVertices; u++) {
+        // Executar Bellman-Ford a partir do vértice u
+        GraphBellmanFordAlg* bfResult = GraphBellmanFordAlgExecute(g, u);
+        assert(bfResult != NULL);
+
+        // Verificar quais vértices são alcançáveis a partir de u
+        for (unsigned int v = 0; v < numVertices; v++) {
+            if (u != v && GraphBellmanFordAlgReached(bfResult, v)) {
+                // Adicionar uma aresta no grafo de fecho transitivo
+                GraphAddEdge(closure, u, v); // Peso padrão 1, já que o grafo não é ponderado
+            }
+        }
+
+        // Liberar memória do resultado de Bellman-Ford
+        GraphBellmanFordAlgDestroy(&bfResult);
+    }
+
+    return closure;
 }
