@@ -49,7 +49,7 @@ int main(void) {
     GraphCheckInvariants(G3);
 
     printf("Grafo 4:\n");
-    GraphDisplayDOT(G4);
+    //GraphDisplayDOT(G4);
     GraphCheckInvariants(G4);
 
     printf("Grafo 5:\n");
@@ -58,32 +58,31 @@ int main(void) {
 
     // Definição dos InstrName[]
     InstrName[0] = "memops";
-    InstrName[1] = "attributions";
-    InstrName[2] = "comparisons";
+    InstrName[1] = "logical ops";
 
     // Bellman Ford
     // GRAFO 2
+    printf("Bellman-Ford - GRAFO 2\n");
     for (unsigned int i = 0; i < GraphGetNumVertices(G2); i++) {
         GraphBellmanFordAlg* BF_result = GraphBellmanFordAlgExecute(G2, i);
-
         GraphBellmanFordAlgDestroy(&BF_result);
     }
     InstrPrint();
     InstrReset();
 
     // GRAFO 3
+    printf("Bellman-Ford - GRAFO 3\n");
     for (unsigned int i = 0; i < GraphGetNumVertices(G3); i++) {
         GraphBellmanFordAlg* BF_result = GraphBellmanFordAlgExecute(G3, i);
-
         GraphBellmanFordAlgDestroy(&BF_result);
     }
     InstrPrint();
     InstrReset();
 
     // GRAFO 4
+    printf("Bellman-Ford - GRAFO 4\n");
     for (unsigned int i = 0; i < GraphGetNumVertices(G4); i++) {
         GraphBellmanFordAlg* BF_result = GraphBellmanFordAlgExecute(G4, i);
-
         GraphBellmanFordAlgDestroy(&BF_result);
     }
     InstrPrint();
@@ -92,8 +91,6 @@ int main(void) {
     // GRAFO 5
     for (unsigned int i = 0; i < GraphGetNumVertices(G5); i++) {
         GraphBellmanFordAlg* BF_result = GraphBellmanFordAlgExecute(G5, i);
-        GraphBellmanFordAlgDisplayDOT(BF_result);
-        printf("\n");
         GraphBellmanFordAlgDestroy(&BF_result);
     }
     
@@ -103,32 +100,28 @@ int main(void) {
     GraphCheckInvariants(TC_G1);
 
     // GRAFO 2
-    InstrReset();
-    InstrCalibrate();
     Graph* TC_G2 = GraphComputeTransitiveClosure(G2);
 
     printf("Transitive Closure de G2:\n");
-    GraphDisplayDOT(TC_G2);
+    //GraphDisplayDOT(TC_G2);
     GraphCheckInvariants(TC_G2);
     InstrPrint();
     InstrReset();
 
     // GRAFO 3
-    InstrCalibrate();
     Graph* TC_G3 = GraphComputeTransitiveClosure(G3);
 
     printf("Transitive Closure de G3:\n");
-    GraphDisplayDOT(TC_G3);
+    //GraphDisplayDOT(TC_G3);
     GraphCheckInvariants(TC_G3);
     InstrPrint();
     InstrReset();
 
     // GRAFO 4
-    InstrCalibrate();
     Graph* TC_G4 = GraphComputeTransitiveClosure(G4);
 
     printf("Transitive Closure de G4:\n");
-    GraphDisplayDOT(TC_G4);
+    //GraphDisplayDOT(TC_G4);
     GraphCheckInvariants(TC_G4);
     InstrPrint();
     InstrReset();

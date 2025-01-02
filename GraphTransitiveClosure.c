@@ -33,8 +33,7 @@ Graph* GraphComputeTransitiveClosure(Graph* g) {
 
     unsigned int numVertices = GraphGetNumVertices(g);
     
-    // Criar um novo grafo para armazenar o fecho transitivo
-    Graph* closure = GraphCreate(numVertices, 1, 0); // Digraph (1), não ponderado (0)
+    Graph* closure = GraphCreate(numVertices, 1, 0);
     assert(closure != NULL);
 
     // Para cada vértice do grafo original
@@ -45,10 +44,9 @@ Graph* GraphComputeTransitiveClosure(Graph* g) {
 
         // Verificar quais vértices são alcançáveis a partir de u
         for (unsigned int v = 0; v < numVertices; v++) {
-            InstrCount[2]++;
+            InstrCount[1]++;
             if (u != v && GraphBellmanFordAlgReached(bfResult, v)) {
-                // Adicionar uma aresta no grafo de fecho transitivo
-                GraphAddEdge(closure, u, v); // Peso padrão 1, já que o grafo não é ponderado
+                GraphAddEdge(closure, u, v);
             }
         }
 

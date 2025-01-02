@@ -80,7 +80,7 @@ GraphEccentricityMeasures* GraphEccentricityMeasuresCompute(Graph* g) {
       }
   }
 
-  // Calcular diâmetros
+  // Calcular diâmetro
   int diameter = -1;
   for (unsigned int v = 0; v < numVertices; v++) {
       if (eccentricities[v] > diameter) {

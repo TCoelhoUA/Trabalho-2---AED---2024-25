@@ -34,48 +34,36 @@ struct _GraphBellmanFordAlg {
   unsigned int startVertex;  // The root of the shortest-paths tree
 };
 
-int distancias(GraphBellmanFordAlg* result, unsigned int u, unsigned int v) {
-    unsigned int numVertices = GraphGetNumVertices(result->graph);
-    if (v >= numVertices || u >= numVertices) {
-        fprintf(stderr, "Erro: índice de vértice fora do limite (u=%d, v=%d)\n", u, v);
-        return 1; // Retorna erro para que traverseAllEdges possa lidar com isso
-    }
+int distancias(GraphBellmanFordAlg* result, int u, int v) {
+    InstrCount[1]++;
     if (result->marked[u] && result->distance[v] == -1) { // Verifica se u está marcado
         result->distance[v] = result->distance[u] + 1;
         result->predecessor[v] = u;
         result->marked[v] = 1;
+        InstrCount[0] += 3;
     }
+
     return 0;
 }
 
-// Traverse all edges using adjacency list
-int traverseAllEdges(GraphBellmanFordAlg* result, int (*cb)(GraphBellmanFordAlg*, int, int)) {
+// Passa por todos os arcos usando a lista de adjacências
+int percorrerArcos(GraphBellmanFordAlg* result) {
     unsigned int vertices = GraphGetNumVertices(result->graph);
     for (unsigned int u = 0; u < vertices; u++) {
-        InstrCount[0]++;
-        InstrCount[1]++;
         unsigned int* adjacents = GraphGetAdjacentsTo(result->graph, u);
         if (adjacents == NULL) continue; // Se não houver adjacentes, passa para o próximo vértice
 
         unsigned int numAdjacents = adjacents[0]; // O primeiro elemento é o número de adjacentes
         for (unsigned int i = 0; i < numAdjacents; i++) {
-            InstrCount[0]++;
             unsigned int v = adjacents[i + 1]; // Os vértices adjacentes começam em adjacents[1]
-
-            InstrCount[2]++;
-            if (v >= GraphGetNumVertices(result->graph)) {
-                fprintf(stderr, "Erro: índice de vértice fora do limite (u=%u, v=%u)\n", u, v);
-                free(adjacents);
-                return 0;
-            }
-
-            InstrCount[2]++;
-            if (cb(result, u, v)) {
-                free(adjacents);
-                return 0;
+            InstrCount[1]++;
+            if (result->marked[u] && result->distance[v] == -1) { // Verifica se u está marcado
+                result->distance[v] = result->distance[u] + 1;
+                result->predecessor[v] = u;
+                result->marked[v] = 1;
+                InstrCount[0] += 3;
             }
         }
-
         free(adjacents);
     }
     return 1;
@@ -85,42 +73,26 @@ int traverseAllEdges(GraphBellmanFordAlg* result, int (*cb)(GraphBellmanFordAlg*
 
 GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g, unsigned int startVertex) {
   assert(g != NULL);
-
-  // Validação do vértice inicial
-  if (startVertex >= GraphGetNumVertices(g)) {
-    fprintf(stderr, "Erro: startVertex (%u) fora dos limites do grafo (0 a %u)\n",
-            startVertex, GraphGetNumVertices(g) - 1);
-    return NULL; // Retorna NULL para indicar erro
-  }
-
+  assert(startVertex < GraphGetNumVertices(g));
   assert(GraphIsWeighted(g) == 0);
 
   GraphBellmanFordAlg* result = (GraphBellmanFordAlg*)malloc(sizeof(struct _GraphBellmanFordAlg));
   assert(result != NULL);
 
-  if (result == NULL) {
-    fprintf(stderr, "Erro: Falha na alocação de memória para GraphBellmanFordAlg.\n");
-    return NULL;
-  }
-
-  // Configuração inicial
+  // Given graph and start vertex for the shortest-paths
   result->graph = g;
   result->startVertex = startVertex;
 
   unsigned int numVertices = GraphGetNumVertices(g);
 
-  // Alocação de memória para estruturas auxiliares
-  result->marked = calloc(numVertices, sizeof(unsigned int));
- 
+  // Alocação dos arrays auxiliares
+  result->marked = calloc(numVertices, sizeof(unsigned int)); // Inicializado a 0 porque usámos calloc em vez de malloc
   result->distance = malloc(numVertices * sizeof(int));
-
   result->predecessor = malloc(numVertices * sizeof(int));
- 
   assert(result->marked != NULL && result->distance != NULL && result->predecessor != NULL);
 
   // Inicialização dos arrays
   for (unsigned int v = 0; v < numVertices; v++) {
-    //result->marked[v] = 0;
     result->distance[v] = -1;
     result->predecessor[v] = -1;
   }
@@ -129,7 +101,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g, unsigned int startVert
 
   // Algoritmo de Bellman-Ford
   for (unsigned int v = 0; v < numVertices - 1; v++) {
-    if (!traverseAllEdges(result, distancias)) {
+    if (!percorrerArcos(result)) {
         fprintf(stderr, "Erro ao atualizar arestas na iteração %u\n", v);
         free(result->marked);
         free(result->distance);
