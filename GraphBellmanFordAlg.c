@@ -34,7 +34,7 @@ struct _GraphBellmanFordAlg {
   unsigned int startVertex;  // The root of the shortest-paths tree
 };
 
-int distancias(GraphBellmanFordAlg* result, int u, int v) {
+int distancias(GraphBellmanFordAlg* result, unsigned int u, unsigned int v) {
     unsigned int numVertices = GraphGetNumVertices(result->graph);
     if (v >= numVertices || u >= numVertices) {
         fprintf(stderr, "Erro: índice de vértice fora do limite (u=%d, v=%d)\n", u, v);
@@ -52,24 +52,31 @@ int distancias(GraphBellmanFordAlg* result, int u, int v) {
 int traverseAllEdges(GraphBellmanFordAlg* result, int (*cb)(GraphBellmanFordAlg*, int, int)) {
     unsigned int vertices = GraphGetNumVertices(result->graph);
     for (unsigned int u = 0; u < vertices; u++) {
+        InstrCount[0]++;
+        InstrCount[1]++;
         unsigned int* adjacents = GraphGetAdjacentsTo(result->graph, u);
         if (adjacents == NULL) continue; // Se não houver adjacentes, passa para o próximo vértice
 
         unsigned int numAdjacents = adjacents[0]; // O primeiro elemento é o número de adjacentes
         for (unsigned int i = 0; i < numAdjacents; i++) {
+            InstrCount[0]++;
             unsigned int v = adjacents[i + 1]; // Os vértices adjacentes começam em adjacents[1]
+
+            InstrCount[2]++;
             if (v >= GraphGetNumVertices(result->graph)) {
                 fprintf(stderr, "Erro: índice de vértice fora do limite (u=%u, v=%u)\n", u, v);
                 free(adjacents);
                 return 0;
             }
+
+            InstrCount[2]++;
             if (cb(result, u, v)) {
                 free(adjacents);
                 return 0;
             }
         }
 
-        free(adjacents); // Liberta a lista de adjacentes após o uso
+        free(adjacents);
     }
     return 1;
 }
@@ -110,6 +117,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g, unsigned int startVert
   result->predecessor = malloc(numVertices * sizeof(int));
  
   assert(result->marked != NULL && result->distance != NULL && result->predecessor != NULL);
+
   // Inicialização dos arrays
   for (unsigned int v = 0; v < numVertices; v++) {
     //result->marked[v] = 0;
@@ -133,8 +141,6 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g, unsigned int startVert
 
   return result;
 }
-
-
 
 void GraphBellmanFordAlgDestroy(GraphBellmanFordAlg** p) {
   assert(*p != NULL);
@@ -164,45 +170,41 @@ int GraphBellmanFordAlgDistance(const GraphBellmanFordAlg* p, unsigned int v) {
 
   return p->distance[v];
 }
-
 Stack* GraphBellmanFordAlgPathTo(const GraphBellmanFordAlg* p, unsigned int v) {
-    assert(p != NULL);
-    assert(v < GraphGetNumVertices(p->graph));
-    Stack* s = StackCreate(GraphGetNumVertices(p->graph));
-    if (p->distance[v] == -1) {
-        return s;
-    }
-    unsigned int current = v;
-    while (current != p->startVertex) {
-      if (current == -1) { // Verifica ciclo ou caminho inválido
-          fprintf(stderr, "Erro: predecessor inválido\n");
-          StackDestroy(&s);
-          return NULL;
-      }
-    StackPush(s, current);
-    current = p->predecessor[current];
-    }
-    StackPush(s, p->startVertex);
+  assert(p != NULL);
+  assert(v < GraphGetNumVertices(p->graph));
+
+  Stack* s = StackCreate(GraphGetNumVertices(p->graph));
+
+  if (p->marked[v] == 0) {
     return s;
+  }
+
+  // Store the path
+  for (unsigned int current = v; current != p->startVertex;
+       current = p->predecessor[current]) {
+    StackPush(s, current);
+  }
+
+  StackPush(s, p->startVertex);
+
+  return s;
 }
 
 // DISPLAYING on the console
 
 void GraphBellmanFordAlgShowPath(const GraphBellmanFordAlg* p, unsigned int v) {
-    assert(p != NULL);
-    assert(v < GraphGetNumVertices(p->graph));
-    Stack* s = GraphBellmanFordAlgPathTo(p, v);
-    if (s == NULL) {
-        printf("No path to vertex %u\n", v);
-        return;
-    }
-    while (!StackIsEmpty(s)) {
-        printf("%d ", StackPop(s));
-    }
-    printf("\n");
-    StackDestroy(&s);
-}
+  assert(p != NULL);
+  assert(v < GraphGetNumVertices(p->graph));
 
+  Stack* s = GraphBellmanFordAlgPathTo(p, v);
+
+  while (StackIsEmpty(s) == 0) {
+    printf("%d ", StackPop(s));
+  }
+
+  StackDestroy(&s);
+}
 
 // Display the Shortest-Paths Tree in DOT format
 void GraphBellmanFordAlgDisplayDOT(const GraphBellmanFordAlg* p) {
