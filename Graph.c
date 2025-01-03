@@ -137,7 +137,7 @@ Graph* GraphCreateTranspose(const Graph* g) {
   assert(g->isDigraph);
   assert(g->isComplete == 0);
 
-  Graph *GraphTranspose = GraphCreate(GraphGetNumVertices(g), GraphIsDigraph(g), GraphIsWeighted(g));
+  Graph *transpose = GraphCreate(GraphGetNumVertices(g), GraphIsDigraph(g), GraphIsWeighted(g));
   
   List* vertices = g->verticesList;
   ListMoveToHead(vertices);
@@ -148,16 +148,16 @@ Graph* GraphCreateTranspose(const Graph* g) {
 
     // Retorna à head da lista
     ListMoveToHead(edges);
-    for (unsigned int e = 0; e < ListGetSize(edges); e++) {
+    for (int e = 0; e < ListGetSize(edges); e++) {
       struct _Edge* edge = ListGetCurrentItem(edges);
 
       // Adiciona a aresta transposta do grafo ao novo grafo transposto
       // Adiciona o par ordenado (vertex->id -> edge->adjVertex) só que ao contrário: (edge->adjVertex -> vertex->id)
       if (g->isWeighted) {  // Grafo com pesos associados aos arcos
-        GraphAddWeightedEdge(GraphTranspose, edge->adjVertex, vertex->id, edge->weight);
+        GraphAddWeightedEdge(transpose, edge->adjVertex, vertex->id, edge->weight);
       }
       else {  // Grafo sem pesos associados aos arcos
-        GraphAddEdge(GraphTranspose, edge->adjVertex, vertex->id);
+        GraphAddEdge(transpose, edge->adjVertex, vertex->id);
       }
 
       // Salta para o próximo arco do vértice atual
@@ -168,7 +168,7 @@ Graph* GraphCreateTranspose(const Graph* g) {
     ListMoveToNext(vertices);
   }
 
-  return GraphTranspose;
+  return transpose;
 }
 
 void GraphDestroy(Graph** p) {

@@ -41,6 +41,7 @@ GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(Graph* g) 
 
   result->distance = malloc(numVertices * sizeof(int*));
   assert(result->distance != NULL);
+  
   for (unsigned int i = 0; i < numVertices; i++) {
     result->distance[i] = malloc(numVertices * sizeof(int));
     assert(result->distance[i] != NULL);

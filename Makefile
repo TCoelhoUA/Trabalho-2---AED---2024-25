@@ -6,7 +6,7 @@
 CFLAGS += -g -Wall -Wextra
 
 TARGETS = TestAllPairsShortestDistances TestBellmanFordAlg \
- TestCreateTranspose TestEccentricityMeasures TestTransitiveClosure Testes_Relatorio
+ TestCreateTranspose TestEccentricityMeasures TestTransitiveClosure
 
 all: $(TARGETS)
 
@@ -23,9 +23,6 @@ TestEccentricityMeasures: TestEccentricityMeasures.o Graph.o GraphBellmanFordAlg
  SortedList.o instrumentation.o
 
 TestTransitiveClosure: TestTransitiveClosure.o Graph.o GraphBellmanFordAlg.o \
- GraphTransitiveClosure.o IntegersStack.o SortedList.o instrumentation.o
-
-Testes_Relatorio: Testes_Relatorio.o Graph.o GraphBellmanFordAlg.o \
  GraphTransitiveClosure.o IntegersStack.o SortedList.o instrumentation.o
 
 # Dependencies of source files
@@ -63,9 +60,6 @@ TestEccentricityMeasures.o: TestEccentricityMeasures.c Graph.h \
 TestCreateTranspose.o: TestCreateTranspose.c Graph.h instrumentation.h
 
 TestTransitiveClosure.o: TestTransitiveClosure.c Graph.h GraphBellmanFordAlg.h \
- GraphTransitiveClosure.h instrumentation.h
-
-Testes_Relatorio.o: Testes_Relatorio.c Graph.h GraphBellmanFordAlg.h \
  GraphTransitiveClosure.h instrumentation.h
 
 clean:
